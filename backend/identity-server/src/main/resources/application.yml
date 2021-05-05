@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: identity-server
+  profiles:
+    active: local
+  config:
+    import: "configserver:"
