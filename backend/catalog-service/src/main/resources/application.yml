@@ -1,14 +1,6 @@
 server:
   port: 8001
 
-spring:
-  application:
-    name: catalog-service
-  profiles:
-    active: local
-  config:
-    import: "configserver:"
-
 logging:
   level:
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE

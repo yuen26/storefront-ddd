@@ -23,9 +23,10 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
         http.csrf().disable();
 
         http.authorizeRequests()
-                .anyRequest().permitAll().and()
-                .formLogin().permitAll().and()
-                .logout().permitAll();
+                .antMatchers("/api/v1/rsa/public-key").permitAll()
+                .antMatchers("/api/v1/accounts").permitAll()
+                .antMatchers("/api/v1/oauth-clients").permitAll()
+                .anyRequest().authenticated();
     }
 
     @Bean
