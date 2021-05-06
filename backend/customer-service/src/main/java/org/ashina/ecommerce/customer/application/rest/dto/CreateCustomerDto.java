@@ -1,7 +1,7 @@
 package org.ashina.ecommerce.customer.application.rest.dto;
 
 import lombok.Data;
-import org.ashina.ecommerce.sharedkernel.security.Roles;
+import org.ashina.ecommerce.sharedkernel.security.Role;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -25,5 +25,5 @@ public class CreateCustomerDto {
     private String password;
 
     @NotEmpty
-    private Set<Roles> roles;
+    private Set<Role> roles;
 }

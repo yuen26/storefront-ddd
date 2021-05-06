@@ -1,8 +1,9 @@
 package org.ashina.ecommerce.identity.server.service;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.ashina.ecommerce.identity.server.dto.request.CreateAccountRequest;
-import org.ashina.ecommerce.identity.server.model.Account;
+import org.ashina.ecommerce.identity.server.entity.Account;
 import org.ashina.ecommerce.identity.server.repository.AccountRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -11,13 +12,32 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class AccountService {
 
+    // Dependencies
+    // -----------------------------------------------------------------------------------------------------------------
+
     private final AccountRepository accountRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public void save(CreateAccountRequest request) {
+    // Methods
+    // -----------------------------------------------------------------------------------------------------------------
+
+    public void createAccount(CreateAccountRequest request) {
+        if (accountRepository.findByEmail(request.getEmail()).isPresent()) {
+            throw new IllegalArgumentException("Email already registered");
+        }
+        Account account = newAccount(request);
+        accountRepository.save(account);
+    }
+
+    private Account newAccount(CreateAccountRequest request) {
         Account account = new Account();
+        if (StringUtils.isNotBlank(request.getId())) {
+            // Customer registration
+            account.setId(request.getId());
+        }
         account.setEmail(request.getEmail());
         account.setPassword(passwordEncoder.encode(request.getPassword()));
-        accountRepository.save(account);
+        account.setRoles(RoleHelper.asRoles(request.isAdmin()));
+        return account;
     }
 }

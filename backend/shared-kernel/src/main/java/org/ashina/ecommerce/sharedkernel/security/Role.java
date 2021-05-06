@@ -1,7 +1,7 @@
 package org.ashina.ecommerce.sharedkernel.security;
 
-public enum Roles {
+public enum Role {
 
-    ADMIN,
-    MEMBER
+    ROLE_ADMIN,
+    ROLE_MEMBER
 }

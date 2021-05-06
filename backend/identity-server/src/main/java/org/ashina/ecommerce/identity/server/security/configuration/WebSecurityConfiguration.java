@@ -1,4 +1,4 @@
-package org.ashina.ecommerce.identity.server.security;
+package org.ashina.ecommerce.identity.server.security.configuration;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.annotation.Order;
@@ -22,9 +22,10 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable();
 
-        http.authorizeRequests().anyRequest().permitAll().and()
-            .formLogin().permitAll().and()
-            .logout().permitAll();
+        http.authorizeRequests()
+                .anyRequest().permitAll().and()
+                .formLogin().permitAll().and()
+                .logout().permitAll();
     }
 
     @Bean

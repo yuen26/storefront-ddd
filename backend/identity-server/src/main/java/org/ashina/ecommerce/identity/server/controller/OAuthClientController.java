@@ -12,27 +12,25 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 
-@RequiredArgsConstructor
 @RestController
+@RequiredArgsConstructor
 public class OAuthClientController {
 
-    // =================================================================================================================
     // Dependencies
-    // =================================================================================================================
+    // -----------------------------------------------------------------------------------------------------------------
 
-    private final OAuthClientService clientService;
+    private final OAuthClientService oAuthClientService;
 
-    // =================================================================================================================
     // APIs
-    // =================================================================================================================
+    // -----------------------------------------------------------------------------------------------------------------
 
-    @PostMapping("/oauth/clients")
-    public CreateOAuthClientResponse createClient(@Valid @RequestBody CreateOAuthClientRequest reqDto) {
-        return clientService.createClient(reqDto);
+    @PostMapping("/api/v1/oauth-clients")
+    public CreateOAuthClientResponse createOAuthClient(@Valid @RequestBody CreateOAuthClientRequest request) {
+        return oAuthClientService.createOAuthClient(request);
     }
 
-    @DeleteMapping("/oauth/clients/{id}")
-    public void deleteClient(@PathVariable String id) {
-        clientService.deleteClient(id);
+    @DeleteMapping("/api/v1/oauth-clients/{id}")
+    public void deleteOAuthClient(@PathVariable String id) {
+        oAuthClientService.deleteClient(id);
     }
 }

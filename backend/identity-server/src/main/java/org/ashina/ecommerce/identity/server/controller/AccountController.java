@@ -15,11 +15,17 @@ import javax.validation.Valid;
 @RequiredArgsConstructor
 public class AccountController {
 
+    // Dependencies
+    // -----------------------------------------------------------------------------------------------------------------
+
     private final AccountService accountService;
+
+    // APIs
+    // -----------------------------------------------------------------------------------------------------------------
 
     @PostMapping("/api/v1/accounts")
     public ResponseEntity<Void> createAccount(@Valid @RequestBody CreateAccountRequest request) {
-        accountService.save(request);
+        accountService.createAccount(request);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

@@ -4,53 +4,61 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.ashina.ecommerce.identity.server.dto.request.CreateOAuthClientRequest;
 import org.ashina.ecommerce.identity.server.dto.response.CreateOAuthClientResponse;
-import org.ashina.ecommerce.identity.server.model.OAuthClientDetails;
+import org.ashina.ecommerce.identity.server.entity.OAuthClient;
 import org.ashina.ecommerce.identity.server.repository.OAuthClientDetailsRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@RequiredArgsConstructor
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Objects;
+
 @Service
+@RequiredArgsConstructor
 public class OAuthClientService {
 
-    // =================================================================================================================
     // Dependencies
-    // =================================================================================================================
+    // -----------------------------------------------------------------------------------------------------------------
 
     private final OAuthClientDetailsRepository oAuthClientDetailsRepository;
     private final PasswordEncoder passwordEncoder;
 
-    // =================================================================================================================
-    // Constants
-    // =================================================================================================================
-
-    private static final int CLIENT_SECRET_LENGTH = 10;
-
-    // =================================================================================================================
-    // Public methods
-    // =================================================================================================================
+    // Methods
+    // -----------------------------------------------------------------------------------------------------------------
 
     @Transactional
-    public CreateOAuthClientResponse createClient(CreateOAuthClientRequest reqDto) {
-        if (oAuthClientDetailsRepository.findById(reqDto.getClientId()).isPresent()) {
-            throw new IllegalArgumentException(
-                    String.format("Client ID %s already exists", reqDto.getClientId())
-            );
+    public CreateOAuthClientResponse createOAuthClient(CreateOAuthClientRequest request) {
+        if (oAuthClientDetailsRepository.findById(request.getClientId()).isPresent()) {
+            throw new IllegalArgumentException(String.format("Client ID %s already exists", request.getClientId()));
         }
 
-        OAuthClientDetails clientDetails = new OAuthClientDetails();
-        clientDetails.setClientId(reqDto.getClientId());
-        String clientSecret = RandomStringUtils.random(CLIENT_SECRET_LENGTH, true, true);
-        clientDetails.setClientSecret(passwordEncoder.encode(clientSecret));
-        clientDetails.setScope(reqDto.getScope());
-        clientDetails.setAuthorizedGrantTypes("authorization_code,password,refresh_token");
-        clientDetails.setWebServerRedirectUri(reqDto.getWebServerRedirectUri());
-        clientDetails.setAccessTokenValidity(2592000); // 30 days
-        clientDetails.setRefreshTokenValidity(2592000);
-        oAuthClientDetailsRepository.save(clientDetails);
+        String clientSecret = newClientSecret();
+        OAuthClient oAuthClient = newOAuthClient(request, clientSecret);
+        oAuthClientDetailsRepository.save(oAuthClient);
 
-        return new CreateOAuthClientResponse(clientDetails.getClientId(), clientSecret);
+        return new CreateOAuthClientResponse(request.getClientId(), clientSecret);
+    }
+
+    private OAuthClient newOAuthClient(CreateOAuthClientRequest request, String clientSecret) {
+        OAuthClient oAuthClient = new OAuthClient();
+        oAuthClient.setClientId(request.getClientId());
+        oAuthClient.setClientSecret(passwordEncoder.encode(clientSecret));
+        oAuthClient.setScopes(request.getScopes());
+        oAuthClient.setAuthorizedGrantTypes(
+                new HashSet<>(Arrays.asList("authorization_code","password","refresh_token")));
+        oAuthClient.setAccessTokenValiditySeconds(
+                Objects.nonNull(request.getAccessTokenValiditySeconds()) ?
+                        request.getAccessTokenValiditySeconds() : 2592000); // 30 days
+        oAuthClient.setRefreshTokenValiditySeconds(
+                Objects.nonNull(request.getRefreshTokenValiditySeconds()) ?
+                        request.getRefreshTokenValiditySeconds() : 2592000);
+        oAuthClient.setResourceIds(request.getResourceIds());
+        return oAuthClient;
+    }
+
+    private String newClientSecret() {
+        return RandomStringUtils.random(10, true, true);
     }
 
     @Transactional

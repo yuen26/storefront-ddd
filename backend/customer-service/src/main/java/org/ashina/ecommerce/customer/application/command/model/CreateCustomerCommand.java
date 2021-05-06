@@ -2,7 +2,7 @@ package org.ashina.ecommerce.customer.application.command.model;
 
 import lombok.Data;
 import org.ashina.ecommerce.sharedkernel.command.model.Command;
-import org.ashina.ecommerce.sharedkernel.security.Roles;
+import org.ashina.ecommerce.sharedkernel.security.Role;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -26,5 +26,5 @@ public class CreateCustomerCommand extends Command {
     private String password;
 
     @NotEmpty
-    private Set<Roles> roles;
+    private Set<Role> roles;
 }
