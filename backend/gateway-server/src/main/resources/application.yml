@@ -2,13 +2,6 @@ server:
   port: 8080
 
 spring:
-  application:
-    name: gateway-server
-  profiles:
-    active: local
-  config:
-    uri: http://localhost:8888
-  # Gateway configuration
   cloud:
     gateway:
       discovery:

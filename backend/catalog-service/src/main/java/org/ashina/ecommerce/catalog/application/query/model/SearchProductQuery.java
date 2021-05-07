@@ -3,16 +3,16 @@ package org.ashina.ecommerce.catalog.application.query.model;
 import lombok.Data;
 import org.ashina.ecommerce.sharedkernel.query.model.Query;
 
-import javax.validation.constraints.Positive;
+import javax.validation.constraints.Min;
 
 @Data
 public class SearchProductQuery extends Query {
 
     private String keyword;
 
-    @Positive
+    @Min(0)
     private Integer page;
 
-    @Positive
+    @Min(1)
     private Integer size;
 }
