@@ -8,7 +8,6 @@ import org.ashina.ecommerce.identity.server.entity.OAuthClient;
 import org.ashina.ecommerce.identity.server.repository.OAuthClientDetailsRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -27,7 +26,6 @@ public class OAuthClientService {
     // Methods
     // -----------------------------------------------------------------------------------------------------------------
 
-    @Transactional
     public CreateOAuthClientResponse createOAuthClient(CreateOAuthClientRequest request) {
         if (oAuthClientDetailsRepository.findById(request.getClientId()).isPresent()) {
             throw new IllegalArgumentException(String.format("Client ID %s already exists", request.getClientId()));
@@ -61,7 +59,6 @@ public class OAuthClientService {
         return RandomStringUtils.random(10, true, true);
     }
 
-    @Transactional
     public void deleteClient(String clientId) {
         oAuthClientDetailsRepository.deleteById(clientId);
     }

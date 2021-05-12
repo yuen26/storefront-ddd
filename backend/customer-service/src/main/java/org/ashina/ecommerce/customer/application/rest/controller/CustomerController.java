@@ -30,7 +30,6 @@ public class CustomerController {
         command.setFullName(dto.getFullName());
         command.setEmail(dto.getEmail());
         command.setPassword(dto.getPassword());
-        command.setRoles(dto.getRoles());
         return command;
     }
 

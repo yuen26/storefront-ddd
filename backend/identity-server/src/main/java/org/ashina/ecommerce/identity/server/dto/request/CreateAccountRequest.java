@@ -19,5 +19,5 @@ public class CreateAccountRequest {
     @Pattern(regexp = "[a-zA-Z0-9]{8,50}")
     private String password;
 
-    private boolean isAdmin;
+    private boolean admin;
 }

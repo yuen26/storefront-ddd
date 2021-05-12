@@ -8,6 +8,8 @@ import org.ashina.ecommerce.identity.server.repository.AccountRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
 public class AccountService {
@@ -34,6 +36,8 @@ public class AccountService {
         if (StringUtils.isNotBlank(request.getId())) {
             // Customer registration
             account.setId(request.getId());
+        } else {
+            account.setId(UUID.randomUUID().toString());
         }
         account.setEmail(request.getEmail());
         account.setPassword(passwordEncoder.encode(request.getPassword()));

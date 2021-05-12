@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.ashina.ecommerce.customer.application.command.model.CreateCustomerCommand;
 import org.ashina.ecommerce.customer.application.error.ErrorCode;
 import org.ashina.ecommerce.customer.domain.Customer;
+import org.ashina.ecommerce.customer.infrastructure.identity.IdentityService;
 import org.ashina.ecommerce.customer.infrastructure.persistence.CustomerPersistence;
 import org.ashina.ecommerce.sharedkernel.command.handler.CommandHandler;
 import org.ashina.ecommerce.sharedkernel.command.model.Command;
@@ -17,6 +18,7 @@ import java.util.Optional;
 public class CreateCustomerCommandHandler implements CommandHandler<CreateCustomerCommand> {
 
     private final CustomerPersistence customerPersistence;
+    private final IdentityService identityService;
 
     @Override
     public Class<? extends Command> support() {
@@ -37,6 +39,9 @@ public class CreateCustomerCommandHandler implements CommandHandler<CreateCustom
         // Create customer
         Customer customer = newCustomer(command);
         customerPersistence.save(customer);
+
+        // Create identity
+        identityService.save(customer, command.getPassword());
     }
 
     private Customer newCustomer(CreateCustomerCommand command) {
@@ -45,5 +50,4 @@ public class CreateCustomerCommandHandler implements CommandHandler<CreateCustom
         customer.setEmail(command.getEmail());
         return customer;
     }
-
 }
