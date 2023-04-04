@@ -1,47 +1,40 @@
 package org.ashina.ecommerce.order.application.rest.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.ashina.ecommerce.order.application.command.CancelOrderCommand;
-import org.ashina.ecommerce.order.application.command.CreateOrderCommand;
-import org.ashina.ecommerce.sharedkernel.command.gateway.CommandGateway;
-import org.ashina.ecommerce.sharedkernel.security.SecurityContextHelper;
+import org.ashina.ecommerce.order.application.command.FulfillmentOrderCommand;
+import org.ashina.ecommerce.order.application.rest.dto.FulfillmentOrderDto;
+import org.ashina.ecommerce.order.infrastructure.security.SecurityContextHelper;
+import org.ashina.ecommerce.sharedkernel.command.gateway.DefaultCommandGateway;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.validation.Valid;
 
 @RestController
 @RequiredArgsConstructor
 public class OrderController {
 
-    private final CommandGateway commandGateway;
+    private final DefaultCommandGateway commandGateway;
 
-    @PostMapping("/api/v1/orders")
-    public ResponseEntity<Void> createOrder() throws Exception {
-        CreateOrderCommand command = newCreateOrderCommand();
+    @PostMapping(value = "/api/v1/orders", params = "action=fulfillment")
+    public ResponseEntity<Void> fulfillmentOrder(@Valid @RequestBody FulfillmentOrderDto dto,
+                                                 @AuthenticationPrincipal Jwt jwt) {
+        FulfillmentOrderCommand command = newFulfillmentOrderCommand(dto, jwt);
         commandGateway.send(command);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    private CreateOrderCommand newCreateOrderCommand() {
-        CreateOrderCommand command = new CreateOrderCommand();
-        command.setCustomerId(SecurityContextHelper.currentCustomerId());
-        return command;
+    private FulfillmentOrderCommand newFulfillmentOrderCommand(FulfillmentOrderDto dto, Jwt jwt) {
+        return FulfillmentOrderCommand.builder()
+                .customerId(SecurityContextHelper.currentCustomerId(jwt))
+                .name(dto.getName())
+                .phoneNumber(dto.getPhoneNumber())
+                .address(dto.getAddress())
+                .build();
     }
-
-    @PostMapping("/api/v1/orders/{orderId}/cancel")
-    public ResponseEntity<Void> cancelOrder(@PathVariable String orderId) throws Exception {
-        CancelOrderCommand command = newCancelOrderCommand(orderId);
-        commandGateway.send(command);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
-
-    private CancelOrderCommand newCancelOrderCommand(String orderId) {
-        CancelOrderCommand command = new CancelOrderCommand();
-        command.setCustomerId(SecurityContextHelper.currentCustomerId());
-        command.setOrderId(orderId);
-        return command;
-    }
-
 }

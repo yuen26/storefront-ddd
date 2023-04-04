@@ -1,17 +1,23 @@
 package org.ashina.ecommerce.customer.application.rest.dto;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
-@Data
+@Getter
+@Setter
 public class CreateCustomerDto {
 
     @NotBlank
-    @Size(max = 100)
-    private String fullName;
+    @Size(max = 50)
+    private String lastName;
+
+    @NotBlank
+    @Size(max = 50)
+    private String firstName;
 
     @NotBlank
     @Email
